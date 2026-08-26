@@ -21,9 +21,15 @@ print_menu() {
   echo ""
   echo -e "${YELLOW}Selecciona una opción:${NC}"
   echo ""
-  echo "  1) 🐳 Construir imagen Docker"
+  echo "  1) 🐳 Construir imágenes Docker"
   echo ""
-  echo "  2) 👀 Ejecutar tests en modo watch"
+  echo "  2) 🚀 Levantar backend, MongoDB y front"
+  echo ""
+  echo "  3) 🌐 Levantar solo el front"
+  echo ""
+  echo "  4) 🌱 Cargar datos de ejemplo en MongoDB"
+  echo ""
+  echo "  5) 👀 Ejecutar tests en modo watch"
   echo ""
   echo -e "${RED} 0) ❌ Salir${NC}"
   echo ""
@@ -32,14 +38,44 @@ print_menu() {
 # Docker functions
 build_docker() {
   echo -e "${BLUE}🐳 Construyendo imagen Docker...${NC}"
-  docker-compose build
-  echo -e "${GREEN}✅ Imagen construida exitosamente${NC}"
+  docker compose build
+  echo -e "${GREEN}✅ Imágenes construidas exitosamente${NC}"
+}
+
+start_frontend() {
+  if [[ -f frontend/.frontend.pid ]] && kill -0 "$(cat frontend/.frontend.pid)" 2>/dev/null; then
+    echo -e "${YELLOW}🌐 El front ya está ejecutándose en http://localhost:5173${NC}"
+    return
+  fi
+
+  if [[ ! -d frontend/node_modules ]]; then
+    echo -e "${BLUE}📦 Instalando dependencias del front...${NC}"
+    npm --prefix frontend install
+  fi
+
+  nohup npm --prefix frontend run dev > frontend.log 2>&1 &
+  echo $! > frontend/.frontend.pid
+  echo -e "${GREEN}✅ Front ejecutándose en segundo plano: http://localhost:5173${NC}"
+}
+
+start_docker() {
+  echo -e "${BLUE}🚀 Levantando backend y MongoDB en segundo plano...${NC}"
+  docker compose up --build -d
+  start_frontend
+  echo -e "${GREEN}✅ API: http://localhost:3000${NC}"
+  echo -e "${GREEN}✅ Front: http://localhost:5173${NC}"
 }
 
 run_tests_watch() {
   echo -e "${BLUE}👀 Ejecutando tests en modo watch...${NC}"
   echo -e "${YELLOW}(Presiona Ctrl+C para salir)${NC}"
   npm run test:watch
+}
+
+seed_database() {
+  echo -e "${BLUE}🌱 Cargando eventos, usuarios y asistencias de ejemplo...${NC}"
+  npm run seed
+  echo -e "${GREEN}✅ Datos de ejemplo cargados${NC}"
 }
 
 # Main loop
@@ -56,6 +92,15 @@ main() {
         build_docker
         ;;
       2)
+        start_docker
+        ;;
+      3)
+        start_frontend
+        ;;
+      4)
+        seed_database
+        ;;
+      5)
         run_tests_watch
         ;;
       0)

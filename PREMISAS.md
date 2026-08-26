@@ -10,8 +10,11 @@ npm run menu
 ```
 Para:
 
-- Construir la imagen Docker.
+- Construir las imágenes Docker.
+- Levantar el backend y MongoDB.
 - Ejecutar los tests en modo watch.
+
+La opción de levantar Docker expone la API en `http://localhost:3000` y MongoDB en `localhost:27017`.
 
 
 ## 📌 Premisas explícitas

@@ -10,11 +10,34 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=wuolah
     volumes:
       - .:/app
       - /app/node_modules
     networks:
       - wuolah-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:7
+    container_name: wuolah-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - wuolah-network
+
+volumes:
+  mongodb-data:
 
 networks:
   wuolah-network:

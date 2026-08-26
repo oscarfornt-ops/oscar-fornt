@@ -11,3 +11,8 @@ export * from '@features/attendance/application/ListAttendeesUseCase';
 export * from '@features/events/ports/EventRepository';
 export * from '@features/users/ports/UserRepository';
 export * from '@features/attendance/ports/AttendanceRepository';
+
+export * from './infra';
+export * from '@features/events/infrastructure/MongoEventRepository';
+export * from '@features/users/infrastructure/MongoUserRepository';
+export * from '@features/attendance/infrastructure/MongoAttendanceRepository';
