@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  wuolah-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wuolah-event-attendance-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - wuolah-network
+
+networks:
+  wuolah-network:
+    driver: bridge
