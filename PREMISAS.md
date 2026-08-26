@@ -53,7 +53,7 @@ Para simplicidad de la prueba, asumiré las siguientes premisas:
 
 Arquitectura síncrona (sin pensar en infra distribuida). 
 Me he centrado en dominio.
-De momento he ignorado la implementación de los controllers y repositorios. Lo podemos comentar en directo durante la prueba.
+Por la simplicidad, no he creado DTOs para todo lo que necesite el front. Lo comentamos en la reunión.
 
 ### Volumetría
 
