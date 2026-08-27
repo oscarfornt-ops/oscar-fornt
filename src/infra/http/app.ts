@@ -7,8 +7,8 @@ import { ConfirmAttendanceUseCase } from '@features/attendance/application/Confi
 import { ListAttendeesUseCase } from '@features/attendance/application/ListAttendeesUseCase';
 import { GetEventDetailsUseCase } from '@features/events/application/GetEventDetailsUseCase';
 import { ListEventsUseCase } from '@features/events/application/ListEventsUseCase';
-import { AttendanceController } from './controllers/AttendanceController';
-import { EventController } from './controllers/EventController';
+import { AttendanceController } from '@features/attendance/infrastructure/http/AttendanceController';
+import { EventController } from '@features/events/infrastructure/http/EventController';
 
 export type AppDependencies = {
   eventRepository: EventRepository;
