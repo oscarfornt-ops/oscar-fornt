@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { GetEventDetailsUseCase } from '@features/events/application/GetEventDetailsUseCase';
 import { ListEventsUseCase } from '@features/events/application/ListEventsUseCase';
+import { EventDTO } from './EventDTO';
 
 export class EventController {
   constructor(
@@ -9,11 +10,13 @@ export class EventController {
   ) {}
 
   readonly list = async (_request: Request, response: Response): Promise<void> => {
-    response.json(await this.listEvents.execute());
+    const events = await this.listEvents.execute();
+    response.json(events.map(EventDTO.fromDomain));
   };
 
   readonly details = async (request: Request, response: Response): Promise<void> => {
-    response.json(await this.getEventDetails.execute(this.eventId(request)));
+    const event = await this.getEventDetails.execute(this.eventId(request));
+    response.json(EventDTO.fromDomain(event));
   };
 
   private eventId(request: Request): string {
