@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { CancelAttendanceUseCase } from '@features/attendance/application/CancelAttendanceUseCase';
 import { ConfirmAttendanceUseCase } from '@features/attendance/application/ConfirmAttendanceUseCase';
 import { ListAttendeesUseCase } from '@features/attendance/application/ListAttendeesUseCase';
-import { Attendance } from '@features/attendance/domain/Attendance';
+import { AttendanceDTO } from '@features/attendance/infrastructure/http/AttendanceDTO';
 
 type AttendanceRequest = Request<{ eventId: string }, unknown, { userId?: string }>;
 
@@ -22,7 +22,7 @@ export class AttendanceController {
       userId,
       this.eventId(request)
     );
-    response.json(this.toResponse(attendance));
+    response.json(AttendanceDTO.fromDomain(attendance));
   };
 
   readonly cancel = async (
@@ -34,7 +34,7 @@ export class AttendanceController {
       userId,
       this.eventId(request)
     );
-    response.json(this.toResponse(attendance));
+    response.json(AttendanceDTO.fromDomain(attendance));
   };
 
   readonly attendees = async (
@@ -55,14 +55,5 @@ export class AttendanceController {
   private eventId(request: Request): string {
     const eventId = request.params.eventId;
     return Array.isArray(eventId) ? eventId[0] : eventId;
-  }
-
-  private toResponse(attendance: Attendance) {
-    return {
-      id: attendance.id,
-      userId: attendance.userId,
-      eventId: attendance.eventId,
-      status: attendance.status,
-    };
   }
 }
