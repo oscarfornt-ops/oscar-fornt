@@ -17,7 +17,7 @@ Para:
 La opción de levantar Docker expone la API en `http://localhost:3000` y MongoDB en `localhost:27017`.
 
 
-## 📌 Premisas explícitas
+## 📌 Premisas explícitas del enunciado
 
 - API REST.
 
@@ -34,8 +34,6 @@ La opción de levantar Docker expone la API en `http://localhost:3000` y MongoDB
 - Para cada evento, se pueden ver los usuarios que asistirán.
 
 - El sistema debería enviar una notificación asíncrona una semana antes del evento.
-  - Si una persona marca que asistirá y el evento empieza en menos de una semana, no recibirá esa notificación.
-  - Si el email contiene información importante, como un QR de acceso al evento, el usuario podría no llegar a verla.
 
 - El comportamiento debe ser especialmente:
   - Idempotente.
@@ -186,7 +184,7 @@ userId + eventId
 
 ### Caso límite
 
-Si un usuario confirma su asistencia menos de siete días antes del evento, no entrará en el envío planificado exactamente una semana antes.
+Si un usuario confirma su asistencia menos de siete días antes del evento, no le llegará la notificación una semana antes. Si el email contiene información importante, como un QR de acceso al evento, el usuario no lo verá.
 
 Algunas posibles estrategias serían:
 
