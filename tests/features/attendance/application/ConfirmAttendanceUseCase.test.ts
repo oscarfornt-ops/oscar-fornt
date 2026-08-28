@@ -68,4 +68,38 @@ describe("ConfirmAttendanceUseCase", () => {
 
     expect(result).toEqual(existing);
   });
+
+  it("does not create a second attendance for the same user and event", async () => {
+    const user = UserMother.johnDoe();
+    const event = EventMother.aMusicFestival();
+    const existing = AttendanceMother.attending({
+      userId: user.id,
+      eventId: event.id,
+    });
+
+    userRepository.getById.mockResolvedValue(user);
+    eventRepository.getById.mockResolvedValue(event);
+    attendanceRepository.getByUserAndEvent
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(existing);
+    attendanceRepository.save.mockImplementation(async (value) => value);
+
+    const firstResult = await useCase.execute(user.id, event.id);
+    const secondResult = await useCase.execute(user.id, event.id);
+
+    expect(firstResult.userId).toBe(user.id);
+    expect(firstResult.eventId).toBe(event.id);
+    expect(secondResult).toBe(existing);
+    expect(attendanceRepository.getByUserAndEvent).toHaveBeenCalledTimes(2);
+    expect(attendanceRepository.getByUserAndEvent).toHaveBeenNthCalledWith(
+      1,
+      user.id,
+      event.id,
+    );
+    expect(attendanceRepository.getByUserAndEvent).toHaveBeenNthCalledWith(
+      2,
+      user.id,
+      event.id,
+    );
+  });
 });

@@ -1,17 +1,17 @@
-import { Db } from 'mongodb';
-import { Attendance } from '@features/attendance/domain/Attendance';
-import { AttendanceStatus } from '@features/attendance/domain/AttendanceStatus';
-import { MongoAttendanceRepository } from '@features/attendance/infrastructure/MongoAttendanceRepository';
+import { Db } from "mongodb";
+import { Attendance } from "@features/attendance/domain/Attendance";
+import { AttendanceStatus } from "@features/attendance/domain/AttendanceStatus";
+import { MongoAttendanceRepository } from "@features/attendance/infrastructure/MongoAttendanceRepository";
 
-describe('MongoAttendanceRepository', () => {
+describe("MongoAttendanceRepository", () => {
   const attendance = Attendance.create(
-    'user-1',
-    'event-1',
+    "user-1",
+    "event-1",
     AttendanceStatus.ATTENDING,
-    'attendance-1'
+    "attendance-1",
   );
 
-  it('gets attendance by user and event', async () => {
+  it("gets attendance by user and event", async () => {
     const findOne = jest.fn().mockResolvedValue({
       _id: attendance.id,
       userId: attendance.userId,
@@ -22,16 +22,18 @@ describe('MongoAttendanceRepository', () => {
       collection: jest.fn().mockReturnValue({ findOne }),
     } as unknown as Db;
 
-    const result = await new MongoAttendanceRepository(database).getByUserAndEvent(
-      attendance.userId,
-      attendance.eventId
-    );
+    const result = await new MongoAttendanceRepository(
+      database,
+    ).getByUserAndEvent(attendance.userId, attendance.eventId);
 
     expect(result).toEqual(attendance);
-    expect(findOne).toHaveBeenCalledWith({ userId: 'user-1', eventId: 'event-1' });
+    expect(findOne).toHaveBeenCalledWith({
+      userId: "user-1",
+      eventId: "event-1",
+    });
   });
 
-  it('lists attendance for an event', async () => {
+  it("lists attendance for an event", async () => {
     const toArray = jest.fn().mockResolvedValue([
       {
         _id: attendance.id,
@@ -42,35 +44,62 @@ describe('MongoAttendanceRepository', () => {
     ]);
     const sort = jest.fn().mockReturnValue({ toArray });
     const database = {
-      collection: jest.fn().mockReturnValue({ find: jest.fn().mockReturnValue({ sort }) }),
+      collection: jest
+        .fn()
+        .mockReturnValue({ find: jest.fn().mockReturnValue({ sort }) }),
     } as unknown as Db;
 
-    const result = await new MongoAttendanceRepository(database).getByEvent('event-1');
+    const result = await new MongoAttendanceRepository(database).getByEvent(
+      "event-1",
+    );
 
     expect(result).toEqual([attendance]);
     expect(sort).toHaveBeenCalledWith({ _id: 1 });
   });
 
-  it('upserts attendance by user and event', async () => {
+  it("upserts attendance by user and event", async () => {
     const updateOne = jest.fn().mockResolvedValue({});
     const database = {
       collection: jest.fn().mockReturnValue({ updateOne }),
     } as unknown as Db;
 
-    const result = await new MongoAttendanceRepository(database).save(attendance);
+    const result = await new MongoAttendanceRepository(database).save(
+      attendance,
+    );
 
     expect(result).toBe(attendance);
     expect(updateOne).toHaveBeenCalledWith(
-      { userId: 'user-1', eventId: 'event-1' },
+      { userId: "user-1", eventId: "event-1" },
       {
         $set: { status: AttendanceStatus.ATTENDING },
         $setOnInsert: {
-          _id: 'attendance-1',
-          userId: 'user-1',
-          eventId: 'event-1',
+          _id: "attendance-1",
+          userId: "user-1",
+          eventId: "event-1",
         },
       },
-      { upsert: true }
+      { upsert: true },
     );
+  });
+
+  it("uses the same user and event key when saving the attendance again", async () => {
+    const updateOne = jest.fn().mockResolvedValue({});
+    const database = {
+      collection: jest.fn().mockReturnValue({ updateOne }),
+    } as unknown as Db;
+    const repository = new MongoAttendanceRepository(database);
+
+    await repository.save(attendance);
+    await repository.save(attendance);
+
+    expect(updateOne).toHaveBeenCalledTimes(2);
+    expect(updateOne.mock.calls[0][0]).toEqual({
+      userId: attendance.userId,
+      eventId: attendance.eventId,
+    });
+    expect(updateOne.mock.calls[1][0]).toEqual({
+      userId: attendance.userId,
+      eventId: attendance.eventId,
+    });
   });
 });
