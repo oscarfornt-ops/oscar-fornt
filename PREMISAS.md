@@ -11,10 +11,10 @@ npm run menu
 Para:
 
 - Construir las imágenes Docker.
-- Levantar el backend y MongoDB.
+- Levantar el backend, frontend y MongoDB.
 - Ejecutar los tests en modo watch.
 
-La opción de levantar Docker expone la API en `http://localhost:3000` y MongoDB en `localhost:27017`.
+La opción de levantar Docker expone la API en `http://localhost:3000`, front en  `http://localhost:5173` y MongoDB en `localhost:27017`.
 
 
 ## 📌 Premisas explícitas del enunciado
@@ -51,7 +51,6 @@ Para simplicidad de la prueba, asumiré las siguientes premisas:
 
 Arquitectura síncrona (sin pensar en infra distribuida). 
 Me he centrado en dominio.
-Por la simplicidad, no he creado DTOs para todo lo que necesite el front. Lo comentamos en la reunión.
 
 ### Volumetría
 
