@@ -69,7 +69,12 @@ start_docker() {
 run_tests_watch() {
   echo -e "${BLUE}👀 Ejecutando tests en modo watch...${NC}"
   echo -e "${YELLOW}(Presiona Ctrl+C para salir)${NC}"
-  npm run test:watch
+  docker compose run --rm wuolah-api npm run test:watch
+}
+
+run_tests() {
+  echo -e "${BLUE}✅ Ejecutando todos los tests en Docker...${NC}"
+  docker compose run --rm wuolah-api npm test -- --runInBand
 }
 
 seed_database() {
